@@ -1,10 +1,12 @@
+#pragma once
+
 #include "prerequisites.h"
 
 #define BUFFER_LENGTH 1024
 
-enum SERVER_FLAGS{
-    
-}
+enum ServerFlags{
+    DEBUG_VERBOSE = 1
+};
 
 struct Server{
     SOCKET listen;
@@ -18,6 +20,9 @@ struct Server{
     unsigned int flags;
 };
 
-Server* createServer(u_short port, void (*callback)(Server* server), int* result);
+Server* createServer(u_short port, unsigned int flags, void (*callback)(Server* server), int* result);
+
+int isServerFlag(Server* server, unsigned int flag);
+
 int listenServer(Server* server);
 int closeServer(Server* server);

@@ -1,7 +1,9 @@
 #include "server.h"
 
-Server* createServer(u_short port, void (*callback)(Server* server), int* result){
+Server* createServer(u_short port, unsigned int flags, void (*callback)(Server* server), int* result){
     Server* server = (Server*)malloc(sizeof(Server));
+
+    server->flags = flags;
     server->connect_callback = callback;
 
     server->listen = socket(AF_INET, SOCK_STREAM, NULL);
@@ -31,7 +33,12 @@ int listenServer(Server* server){
 
         recv(clientS, server->RecieveBuffer, BUFFER_LENGTH, NULL);
 
-        (*server->connect_callback)(server);
+        if(isServerFlag(server, DEBUG_VERBOSE)){
+            printf("connection made\n");
+        }
+
+        if(server->connect_callback != nullptr)
+            (*server->connect_callback)(server);
 
         send(clientS, server->SendBuffer, BUFFER_LENGTH, NULL);
 
@@ -39,6 +46,10 @@ int listenServer(Server* server){
     }
 
     return 0;
+}
+
+int isServerFlag(Server* server, unsigned int flag){
+    return server->flags && flag == flag ? 1 : 0;
 }
 
 int closeServer(Server* server){

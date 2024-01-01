@@ -1,13 +1,15 @@
 #pragma once
+#include "prerequisites.h"
 
-#define BUFFER_LENGTH 1024
+#include "config.h"
+#include "server.h"
+#include "database.h"
 
 struct Globals{
-    SOCKET listenerSocket;
-	sockaddr_in server;
+    Database* db;
+    Server* webAPI;
 
-    char SendBuffer[BUFFER_LENGTH] = "/HTTP/1.1 200 OK\nContent-Length: 12\n\nHello World\n";
-    char RecieveBuffer[BUFFER_LENGTH];
+    Config* config;
 };
 
 extern Globals globals;

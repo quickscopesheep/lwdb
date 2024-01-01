@@ -1,31 +1,32 @@
 #include "prerequisites.h"
+
 #include "globals.h"
 
+#include "database.h"
 #include "server.h"
 
-Globals globals;
+Globals globals = Globals();
 
-//int createSocket(){
-//    globals.listenerSocket = socket(AF_INET, SOCK_STREAM, NULL);
-//    globals.server.sin_family = AF_INET;
-//	globals.server.sin_port = htons(80);
-//	InetPton(AF_INET, _T("127.0.0.1"), &globals.server.sin_addr);
-//
-//    return bind(globals.listenerSocket, (struct sockaddr*)&globals.server, sizeof(globals.server));
-//}
+void connect_callback(Server* server){
+    printf(server->RecieveBuffer);
+
+    memset(server->SendBuffer, 0, BUFFER_LENGTH);
+    sprintf(server->SendBuffer, "/HTTP/1.1 200 OK\nContent-Length: 12\n\nHello World\n");
+}
 
 int main(int argsc, char** argsv){
     int iResult;
 
     WSADATA wsa;
     if(WSAStartup(MAKEWORD(2, 2), &wsa)){
-        printf("error starting WinSock");
+        printf("error starting WinSock\n");
         return -1;
     }
 
-    Server* server = createServer(80, nullptr, &iResult);
-    listenServer(server);
-    closeServer(server);
+    globals.webAPI = createServer(80, 0, &connect_callback, &iResult);
+    listenServer(globals.webAPI);
+    closeServer(globals.webAPI);
+
 
     return 0;
 }
